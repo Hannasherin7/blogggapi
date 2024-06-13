@@ -29,6 +29,29 @@ app.post("/sighnup",async(req,res)=>{ //password is a async functn so must need 
 
 })
 
+app.post("/sighnin",(req,res)=>{
+
+    let input=req.body
+    sighnupmodel.find({"email":req.body.email}).then(
+        (response)=>{
+            if (response.length>0) {
+                let dbpassword=response[0].password
+                console.log(dbpassword)
+                bcrypt.compare(input.password,dbpassword,(error,isMatch)=>{
+                    if (isMatch) {
+                        res.json({"status":"success","userid":response[0]._id})
+                    } else {
+                        res.json({"status":"incorrect password"})
+                    }
+                })//compare two password
+
+            } else {
+                res.json({"status":"user not found"})
+            }
+        }
+    ).catch()
+})
+
 
 
 app.listen(8080,()=>{
